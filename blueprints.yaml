@@ -1,0 +1,32 @@
+name: Colorbox
+version: 1.0.0
+description: "This plugin offers a lightbox using the [Colorbox.js](http://www.jacklmoore.com/colorbox/) jQuery plugin by Jack Moore."
+icon: code
+author:
+  name: Bob Rockefeller
+  email: bob@bobrockefeller.com
+  url: http://www.bobrockefeller.com
+homepage: http://www.jacklmoore.com/colorbox/
+keywords: lightbox, jQuery, plugin, code
+license: MIT
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: Plugin status
+      highlight: 1
+      default: 0
+      options:
+        1: Enabled
+        0: Disabled
+      validate:
+        type: bool
+
+    theme:
+      type: select
+      label: CSS Theme
+      default: default
+      options:
+        default: Default
