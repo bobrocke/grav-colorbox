@@ -1,47 +1,41 @@
 <?php
-namespace Grav\Plugin;
 
-use \Grav\Common\Plugin;
-use \Grav\Common\Grav;
-use \Grav\Common\Page\Page;
+   namespace Grav\Plugin;
 
-class ColorboxPlugin extends Plugin
-{
-    /**
-     * @return array
-     */
-    public static function getSubscribedEvents() {
-        return [
-            'onPageInitialized' => ['onPageInitialized', 0],
-            'onTwigSiteVariables' => ['onTwigSiteVariables', 0]
-        ];
-    }
+   use \Grav\Common\Plugin;
 
-    /**
-     * Initialize configuration
-     */
-    public function onPageInitialized()
-    {
-        $defaults = (array) $this->config->get('plugins.colorbox');
+   class ColorboxPlugin extends Plugin
+   {
+      public static function getSubscribedEvents()
+      {
+         return [
+            'onPluginsInitialized'  => ['onPluginsInitialized', 0],
+            'onTwigSiteVariables'     => ['onTwigSiteVariables', 0]
+         ];
+      }
 
-        /** @var Page $page */
-        $page = $this->grav['page'];
-        if (isset($page->header()->colorbox)) {
-            $this->config->set('plugins.colorbox', array_merge($defaults, $page->header()->colorbox));
-        }
-    }
+      public function onPluginsInitialized()
+      {
+         if ($this->isAdmin()) {
+            $this->active = false;
+            return;
+         }
+      }
 
-    /**
-     * if enabled on this page, load the JS + CSS theme.
-     */
-    public function onTwigSiteVariables()
-    {
-        if ($this->config->get('plugins.colorbox.enabled')) {
-            $theme = $this->config->get('plugins.colorbox.theme') ?: 'default';
-            $this->grav['assets']->addCss('plugin://colorbox/css/'.$theme.'.css');
-            $this->grav['assets']->addJs('plugin://colorbox/js/jquery.colorbox-min.js');
-            $this->grav['assets']->addJs('plugin://colorbox/js/init.colorbox.js');
-            $this->grav['assets']->addJs('plugin://colorbox/js/launch.colorbox.js');
-        }
-    }
-}
+      public function onTwigSiteVariables()
+      {
+         if (!$this->active) return;
+
+         $page = $this->grav['page'];
+
+         if (isset($page->header()->colorbox) && (true === $page->header()->colorbox || is_array($page->header()->colorbox))) {
+            $colorbox = array_merge((array) $this->config->get('plugins.colorbox'), (array) $page->header()->colorbox);
+
+            $this->grav['assets']
+            ->addCss('plugin://colorbox/css/' . $colorbox['theme'] . '.css')
+            ->addJs('plugin://colorbox/js/jquery.colorbox-min.js')
+            ->addJs('plugin://colorbox/js/init.colorbox.js')
+            ->addJs('plugin://colorbox/js/launch.colorbox.js');
+         }
+      }
+   }
